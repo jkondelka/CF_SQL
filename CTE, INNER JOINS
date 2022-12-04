@@ -1,4 +1,4 @@
-** CTE, Joins**
+** Most rented genre **
 
 
 SELECT COUNT(rental_id) AS most_rented_genre, category.name
