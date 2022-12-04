@@ -1,0 +1,41 @@
+A script using common table expression 
+
+
+Calculate average rental price in given cities, using CTE
+
+WITH total_amount_spent (
+        customer_id,
+        first_name,
+        last_name,
+        city,
+        country) AS 
+(SELECT
+        customer.customer_id,
+        customer.first_name,
+        customer.last_name,
+        city.city,
+        country.country,
+        SUM(payment.amount) AS total_spent
+FROM customer
+INNER JOIN payment ON payment.customer_id = customer.customer_id
+INNER JOIN address ON customer.address_id = address.address_id
+INNER JOIN city ON address.city_id = city.city_id
+INNER JOIN country ON city.country_ID = country.country_ID
+WHERE city IN ('Aurora',
+                  'Tokat',
+                  'Tarsus',
+                  'Atlixco',
+                  'Emeishan',
+                  'Pontianak',
+                  'Shimoga',
+                  'Aparecida de Goinia',
+                  'Zalantum',
+                  'Taguig')
+GROUP BY customer.customer_id, city.city, country.country
+ORDER BY SUM(payment.amount) DESC
+LIMIT 5)
+
+
+SELECT AVG(total_spent) AS average_spent
+FROM total_amount_spent
+
