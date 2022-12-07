@@ -1,0 +1,52 @@
+How many top 5 customers live in the top 10 countries and top 10 cities
+
+
+SELECT 
+DISTINCT (country.country),
+COUNT(DISTINCT customer.customer_id) AS all_customer_count,
+COUNT(DISTINCT top_5_customers.customer_id) AS top_customer_count
+FROM customer
+INNER JOIN address ON customer.address_id = address.address_id
+INNER JOIN city ON address.city_id = city.city_id
+INNER JOIN country ON city.country_ID = country.country_ID
+LEFT JOIN
+(SELECT
+        customer.customer_id,
+        customer.first_name,
+        customer.last_name,
+        city.city,
+        country.country,
+        SUM(payment.amount) AS total_spent
+FROM customer
+INNER JOIN payment ON payment.customer_id = customer.customer_id
+INNER JOIN address ON customer.address_id = address.address_id
+INNER JOIN city ON address.city_id = city.city_id
+INNER JOIN country ON city.country_ID = country.country_ID
+ WHERE country IN (
+'India',
+                  'China',
+                  'United States',
+                  'Japan',
+                  'Mexico',
+                  'Brazil',
+                  'Russian Federation',
+                  'Philippines',
+                  'Turkey',
+                  'Indonesia')
+AND city IN ('Aurora',
+                  'Tokat',
+                  'Tarsus',
+                  'Atlixco',
+                  'Emeishan',
+                  'Pontianak',
+                  'Shimoga',
+                  'Aparecida de Goinia',
+                  'Zalantum',
+                  'Taguig')
+GROUP BY customer.customer_id, city.city, country.country
+ORDER BY total_spent DESC
+LIMIT 5) as top_5_customers ON country.country = top_5_customers.country
+GROUP BY country.country, top_5_customers
+ORDER BY all_customer_count DESC
+LIMIT 5
+
